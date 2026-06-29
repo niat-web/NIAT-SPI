@@ -11,7 +11,7 @@ export default async function BigQueryPage() {
   if (session.role !== "superadmin") redirect("/dashboard"); // super admin only
 
   return (
-    <div className="p-5 sm:p-8 max-w-6xl mx-auto">
+    <div className="p-5 sm:p-8">
       <PageHeader title="BigQuery Check" subtitle="Browse datasets and tables on the connected service account, and preview live rows." />
       <BigQueryExplorer />
     </div>

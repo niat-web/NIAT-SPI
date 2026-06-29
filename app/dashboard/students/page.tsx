@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default function StudentsPage() {
   return (
-    <div className="p-5 sm:p-8 max-w-6xl mx-auto">
+    <div className="p-5 sm:p-8">
       <PageHeader title="Students" subtitle="Live from BigQuery. Click a student to open their SPI report." />
       <StudentsClient />
     </div>

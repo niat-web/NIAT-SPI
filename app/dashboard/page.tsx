@@ -20,7 +20,7 @@ export default async function DashboardOverview() {
   if (!session) redirect("/staff-login");
 
   return (
-    <div className="p-5 sm:p-8 max-w-6xl mx-auto">
+    <div className="p-5 sm:p-8">
       <PageHeader
         title={`Welcome, ${session.name.split(" ")[0]}`}
         subtitle="Live attendance & eligibility across your scope. Scores and SPI components arrive soon."
