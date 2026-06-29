@@ -14,7 +14,7 @@ export async function GET() {
   const scope = scopeForSession(session);
   const key = `summary:${session.role}:${(scope.campuses ?? []).join(",")}:${(scope.subjects ?? []).join(",")}`;
   try {
-    const data = await withCache(key, () => getDashboardSummary(scope), 3 * 60 * 1000);
+    const data = await withCache(key, () => getDashboardSummary(scope), 60 * 1000);
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });

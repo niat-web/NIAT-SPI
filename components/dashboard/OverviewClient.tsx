@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip as RTooltip, CartesianGrid,
 } from "recharts";
-import { Building2, GraduationCap, BookOpen, AlertTriangle } from "lucide-react";
+import { Building2, GraduationCap, BookOpen, AlertTriangle, RefreshCw } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pctColor, pctTextClass } from "@/lib/utils";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
@@ -12,7 +13,7 @@ import { ROLE_LABELS, type Role } from "@/lib/constants";
 interface CampusRow { instituteName: string; students: number; sections: number; subjects: number; attendancePercentage: number; presentSessions: number; totalSessions: number }
 interface SubjectRow { subjectTitle: string; students: number; attendancePercentage: number }
 interface SectionRow { instituteName: string; batchSectionName: string; students: number; attendancePercentage: number }
-interface Summary { campuses: CampusRow[]; subjects: SubjectRow[]; sections: SectionRow[] }
+interface Summary { campuses: CampusRow[]; subjects: SubjectRow[]; sections: SectionRow[]; syncedAt?: string | null }
 
 function StatCard({ icon, label, value, hint }: { icon: React.ReactNode; label: string; value: string; hint?: string }) {
   return (
@@ -28,11 +29,18 @@ export default function OverviewClient({ role, scopeLabel }: { role: Role; scope
   const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     fetch("/api/dashboard/summary")
       .then(async (r) => { if (!r.ok) throw new Error((await r.json()).error || "Failed"); return r.json(); })
       .then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false));
+  }, []);
+
+  // Re-render every 30s so the "updated X ago" label stays current.
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(id);
   }, []);
 
   if (loading) {
@@ -59,8 +67,15 @@ export default function OverviewClient({ role, scopeLabel }: { role: Role; scope
 
   return (
     <div className="space-y-6">
-      <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-        {ROLE_LABELS[role]} · {scopeLabel}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+          {ROLE_LABELS[role]} · {scopeLabel}
+        </span>
+        {data.syncedAt && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 border border-green-100 px-3 py-1 text-xs font-medium text-green-700" title={new Date(data.syncedAt).toLocaleString()}>
+            <RefreshCw size={11} /> Data updated {formatDistanceToNow(new Date(data.syncedAt), { addSuffix: true })}
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

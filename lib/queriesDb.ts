@@ -14,6 +14,7 @@ interface Snap {
   batchSectionName: string; semesterTitle: string;
   totalSessions: number; presentSessions: number; absentSessions: number; attendancePercentage: number;
   subjects: SnapSubject[];
+  syncedAt?: string | Date;
 }
 
 let cachedHasData: { value: boolean; at: number } | null = null;
@@ -31,7 +32,7 @@ async function loadScoped(scope?: Scope): Promise<Snap[]> {
   const filter: Record<string, unknown> = {};
   if (scope?.campuses?.length) filter.instituteName = { $in: scope.campuses };
   const docs = await StudentSnapshot.find(filter)
-    .select("studentUserId studentName instituteId instituteName batchSectionName semesterTitle totalSessions presentSessions absentSessions attendancePercentage subjects")
+    .select("studentUserId studentName instituteId instituteName batchSectionName semesterTitle totalSessions presentSessions absentSessions attendancePercentage subjects syncedAt")
     .lean();
   return docs as unknown as Snap[];
 }
@@ -54,13 +55,18 @@ export async function getDashboardSummary(scope?: Scope) {
     const [campuses, subjects, sections] = await Promise.all([
       bq.getCampusSummary(scope), bq.getSubjectSummary(scope), bq.getSectionSummary(scope),
     ]);
-    return { campuses, subjects, sections };
+    return { campuses, subjects, sections, syncedAt: null as string | null };
   }
   const docs = await loadScoped(scope);
+  const syncedMs = docs.reduce((m, d) => {
+    const t = d.syncedAt ? new Date(d.syncedAt).getTime() : 0;
+    return t > m ? t : m;
+  }, 0);
   return {
     campuses: computeCampus(docs, scope),
     subjects: computeSubjects(docs, scope),
     sections: computeSections(docs, scope),
+    syncedAt: syncedMs ? new Date(syncedMs).toISOString() : null,
   };
 }
 
