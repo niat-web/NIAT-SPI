@@ -70,11 +70,32 @@ interface BQResponse {
   totalBytesProcessed?: string;
 }
 
+// Named query parameters (BUG-5): pass { name: value } and reference @name in
+// SQL. Strings/numbers are auto-typed; arrays become ARRAY<STRING>.
+export type BQParam = string | number | string[];
+
+function toQueryParameter(name: string, value: BQParam) {
+  if (Array.isArray(value)) {
+    return {
+      name,
+      parameterType: { type: "ARRAY", arrayType: { type: "STRING" } },
+      parameterValue: { arrayValues: value.map((v) => ({ value: String(v) })) },
+    };
+  }
+  const type = typeof value === "number" ? "INT64" : "STRING";
+  return { name, parameterType: { type }, parameterValue: { value: String(value) } };
+}
+
 export async function bqQuery(
   sql: string,
+  params?: Record<string, BQParam>,
   location?: string,
 ): Promise<Record<string, string | null>[]> {
   const token = await getAccessToken();
+
+  const queryParameters = params
+    ? Object.entries(params).map(([k, v]) => toQueryParameter(k, v))
+    : undefined;
 
   const res = await fetch(
     `https://bigquery.googleapis.com/bigquery/v2/projects/${PROJECT_ID}/queries`,
@@ -89,6 +110,7 @@ export async function bqQuery(
         useLegacySql: false,
         timeoutMs: 30000,
         location: location ?? LOCATION,
+        ...(queryParameters ? { parameterMode: "NAMED", queryParameters } : {}),
       }),
     },
   );
@@ -164,6 +186,7 @@ export async function getTablePreview(
   // Views / materialized views / external: must run a bounded query.
   const objs = await bqQuery(
     `SELECT * FROM \`${PROJECT_ID}.${datasetId}.${tableId}\` LIMIT ${limit}`,
+    undefined,
     meta.location,
   );
   const cols = fields.length ? fields : Object.keys(objs[0] ?? {});

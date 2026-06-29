@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle, CheckCircle2, RefreshCw, BookOpen, Briefcase, Users, Star,
   ClipboardList, Lock, Gauge,
@@ -300,9 +301,9 @@ function ComingSoonSPI() {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────
-function StudentDashboard({ studentId }: { studentId: string }) {
-  const ov = useApi<Overview>(`/api/attendance/students/${studentId}/overview`);
-  const su = useApi<Subject[]>(`/api/attendance/students/${studentId}/subjects`);
+function StudentDashboard({ studentId, qs }: { studentId: string; qs: string }) {
+  const ov = useApi<Overview>(`/api/attendance/students/${studentId}/overview${qs}`);
+  const su = useApi<Subject[]>(`/api/attendance/students/${studentId}/subjects${qs}`);
 
   const overview = ov.data;
   const subjects = su.data ?? [];
@@ -317,11 +318,11 @@ function StudentDashboard({ studentId }: { studentId: string }) {
   useEffect(() => {
     if (!selected || recent !== null) return;
     setRecentLoading(true);
-    fetch(`/api/attendance/students/${studentId}/recent`)
+    fetch(`/api/attendance/students/${studentId}/recent${qs}`)
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setRecent(d ?? []))
       .finally(() => setRecentLoading(false));
-  }, [selected, recent, studentId]);
+  }, [selected, recent, studentId, qs]);
 
   const selectedSessions = useMemo(
     () => (selected && recent ? recent.filter((r) => r.subjectTitle === selected.subjectTitle) : []),
@@ -413,8 +414,20 @@ function NoStudentScreen() {
   );
 }
 
+function SpiPageInner({ studentId }: { studentId: string }) {
+  const search = useSearchParams();
+  const token = search.get("t");
+  // Build the query suffix forwarded to the APIs (which enforce access).
+  const qs = token ? `?t=${encodeURIComponent(token)}` : "";
+  return <div className="min-h-[100dvh] bg-[#f5f6fa]"><StudentDashboard studentId={studentId} qs={qs} /></div>;
+}
+
 export default function SpiPage({ params }: { params: { studentId: string } }) {
   const studentId = params.studentId?.trim() || "";
   if (!studentId) return <NoStudentScreen />;
-  return <div className="min-h-[100dvh] bg-[#f5f6fa]"><StudentDashboard studentId={studentId} /></div>;
+  return (
+    <Suspense fallback={<PageLoader className="min-h-[100dvh]" />}>
+      <SpiPageInner studentId={studentId} />
+    </Suspense>
+  );
 }

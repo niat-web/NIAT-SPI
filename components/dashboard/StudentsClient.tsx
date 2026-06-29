@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Download } from "lucide-react";
 import { InlineLoader } from "@/components/ui/Loader";
 import { pctTextClass } from "@/lib/utils";
+import { objectsToCsv, downloadCsv } from "@/lib/csv";
 import FilterBar from "@/components/ui/FilterBar";
 import FilterDrawer, { type FilterGroup, type FilterValue, countActive } from "@/components/ui/FilterDrawer";
 
 interface Row {
   studentUserId: string; studentName: string; instituteName: string;
   batchSectionName: string; attendancePercentage: number; presentSessions: number; totalSessions: number;
+  spiPath?: string;
 }
 
 const BANDS = [
@@ -108,18 +110,47 @@ export default function StudentsClient() {
     return out;
   }, [filters]);
 
+  function exportCsv() {
+    const csv = objectsToCsv(
+      sorted.map((r) => ({
+        name: r.studentName,
+        campus: r.instituteName,
+        section: r.batchSectionName,
+        attendance: `${r.attendancePercentage}%`,
+        present: r.presentSessions,
+        total: r.totalSessions,
+      })),
+      [
+        { key: "name", label: "Student" },
+        { key: "campus", label: "Campus" },
+        { key: "section", label: "Section" },
+        { key: "attendance", label: "Attendance %" },
+        { key: "present", label: "Present" },
+        { key: "total", label: "Total Sessions" },
+      ],
+    );
+    downloadCsv(`students-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  }
+
   return (
     <div className="space-y-4">
       <FilterBar
         search={q} onSearch={setQ} placeholder="Search students by name…"
         onOpenFilters={() => setDrawer(true)} activeCount={countActive(filters)} loading={loading} chips={chips}
         rightSlot={
-          <select value={sort} onChange={(e) => setSort(e.target.value as "default" | "high" | "low")}
-            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-300">
-            <option value="default">Sort: Default</option>
-            <option value="high">Attendance: High to Low</option>
-            <option value="low">Attendance: Low to High</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <select value={sort} onChange={(e) => setSort(e.target.value as "default" | "high" | "low")}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-300">
+              <option value="default">Sort: Default</option>
+              <option value="high">Attendance: High to Low</option>
+              <option value="low">Attendance: Low to High</option>
+            </select>
+            <button type="button" onClick={exportCsv} disabled={!sorted.length}
+              title="Export current view to CSV"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-300">
+              <Download size={15} /> Export
+            </button>
+          </div>
         }
       />
 
@@ -148,7 +179,7 @@ export default function StudentsClient() {
                         <span className="ml-1 text-[11px] font-normal text-gray-400">({r.presentSessions}/{r.totalSessions})</span>
                       </td>
                       <td className="px-5 py-3 text-right">
-                        <Link href={`/spi/${r.studentUserId}`} target="_blank"
+                        <Link href={r.spiPath ?? `/spi/${r.studentUserId}`} target="_blank"
                           className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 text-xs font-semibold">
                           Open <ExternalLink size={12} />
                         </Link>

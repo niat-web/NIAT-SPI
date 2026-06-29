@@ -1,5 +1,6 @@
 import { connectDB } from "./mongodb";
 import { StudentSnapshot } from "../models/StudentSnapshot";
+import { DashboardSummary } from "../models/DashboardSummary";
 import { pct, REQUIRED_PCT } from "./bigquery";
 import type { Scope } from "./queries";
 import * as bq from "./queries";
@@ -9,11 +10,13 @@ import * as bq from "./queries";
 // yet (e.g. before the first nightly sync), so the app works either way.
 
 interface SnapSubject { subjectTitle: string; totalSessions: number; presentSessions: number; absentSessions: number; attendancePercentage: number }
+interface SnapSession { date: string; sessionTitle: string; subjectTitle: string; attendanceStatus: string; markingMethod: string }
 interface Snap {
   studentUserId: string; studentName: string; instituteId: string; instituteName: string;
   batchSectionName: string; semesterTitle: string;
   totalSessions: number; presentSessions: number; absentSessions: number; attendancePercentage: number;
   subjects: SnapSubject[];
+  recentSessions?: SnapSession[];
   syncedAt?: string | Date;
 }
 
@@ -48,6 +51,21 @@ function totalsFor(doc: Snap, subjectScope?: string[]) {
   return { present: doc.presentSessions ?? 0, total: doc.totalSessions ?? 0, subjects: doc.subjects ?? [] };
 }
 
+// True when the scope places no campus/subject restriction (superadmin/admin/hod).
+function isUnrestricted(scope?: Scope): boolean {
+  return !scope?.campuses?.length && !scope?.subjects?.length;
+}
+
+// Compute the three rollups from a set of snapshot docs. Exported so the sync
+// can pre-compute the global (unrestricted) summary once per run (IMP-1).
+export function computeRollups(docs: Snap[], scope?: Scope) {
+  return {
+    campuses: computeCampus(docs, scope),
+    subjects: computeSubjects(docs, scope),
+    sections: computeSections(docs, scope),
+  };
+}
+
 // Load the scoped docs once and compute all three rollups together (used by the
 // dashboard summary endpoint) — avoids three separate full collection scans.
 export async function getDashboardSummary(scope?: Scope) {
@@ -57,15 +75,29 @@ export async function getDashboardSummary(scope?: Scope) {
     ]);
     return { campuses, subjects, sections, syncedAt: null as string | null };
   }
+
+  // IMP-1: the unrestricted (all-campus) view reads the pre-aggregated doc —
+  // one tiny findOne instead of scanning every student snapshot per request.
+  if (isUnrestricted(scope)) {
+    await connectDB();
+    const pre = (await DashboardSummary.findOne({ key: "global" }).lean()) as
+      | { campuses: unknown[]; subjects: unknown[]; sections: unknown[]; syncedAt?: Date } | null;
+    if (pre) {
+      return {
+        campuses: pre.campuses, subjects: pre.subjects, sections: pre.sections,
+        syncedAt: pre.syncedAt ? new Date(pre.syncedAt).toISOString() : null,
+      };
+    }
+    // Fall through to live computation if the summary hasn't been built yet.
+  }
+
   const docs = await loadScoped(scope);
   const syncedMs = docs.reduce((m, d) => {
     const t = d.syncedAt ? new Date(d.syncedAt).getTime() : 0;
     return t > m ? t : m;
   }, 0);
   return {
-    campuses: computeCampus(docs, scope),
-    subjects: computeSubjects(docs, scope),
-    sections: computeSections(docs, scope),
+    ...computeRollups(docs, scope),
     syncedAt: syncedMs ? new Date(syncedMs).toISOString() : null,
   };
 }
@@ -182,5 +214,18 @@ export async function getStudentSubjects(studentId: string) {
     subjectTitle: s.subjectTitle, totalSessions: s.totalSessions, presentSessions: s.presentSessions,
     absentSessions: s.absentSessions, attendancePercentage: s.attendancePercentage,
     isRecoveryMode: s.attendancePercentage < REQUIRED_PCT, meetsRequirement: s.attendancePercentage >= REQUIRED_PCT,
+  }));
+}
+
+// Snapshot-first recent sessions (BUG-2). null = no such student; [] = none yet.
+export async function getStudentRecentSessions(studentId: string) {
+  await connectDB();
+  const d = (await StudentSnapshot.findOne({ studentUserId: studentId })
+    .select("recentSessions")
+    .lean()) as unknown as { recentSessions?: SnapSession[] } | null;
+  if (!d) return bq.getStudentRecentSessions(studentId); // fallback to live
+  return (d.recentSessions ?? []).map((s) => ({
+    date: s.date ?? "", sessionTitle: s.sessionTitle ?? "", subjectTitle: s.subjectTitle ?? "",
+    attendanceStatus: s.attendanceStatus ?? "", markingMethod: s.markingMethod ?? "",
   }));
 }

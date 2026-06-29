@@ -1,4 +1,4 @@
-import { bqQuery, TABLE, REQUIRED_PCT, sanitizeLike, escapeStr, pct } from "./bigquery";
+import { bqQuery, TABLE, REQUIRED_PCT, pct, type BQParam } from "./bigquery";
 
 export interface Scope {
   // Empty / undefined campuses => all campuses. Empty subjects => all subjects.
@@ -6,17 +6,20 @@ export interface Scope {
   subjects?: string[];
 }
 
-function scopeClause(scope?: Scope): string {
+// Build a parameterized scope clause (BUG-5): returns the SQL and the params
+// to bind. UNNEST(@campuses) lets us pass an array safely.
+function scopeClause(scope?: Scope): { sql: string; params: Record<string, BQParam> } {
   const parts = ["is_current_semester = 1"];
+  const params: Record<string, BQParam> = {};
   if (scope?.campuses && scope.campuses.length) {
-    const list = scope.campuses.map((c) => `'${escapeStr(c)}'`).join(", ");
-    parts.push(`institute_name IN (${list})`);
+    parts.push("institute_name IN UNNEST(@campuses)");
+    params.campuses = scope.campuses;
   }
   if (scope?.subjects && scope.subjects.length) {
-    const list = scope.subjects.map((s) => `'${escapeStr(s)}'`).join(", ");
-    parts.push(`subject_title IN (${list})`);
+    parts.push("subject_title IN UNNEST(@subjects)");
+    params.subjects = scope.subjects;
   }
-  return parts.join(" AND ");
+  return { sql: parts.join(" AND "), params };
 }
 
 // ── Student-facing (SPI page) ─────────────────────────────────────────
@@ -30,10 +33,10 @@ export async function getStudentOverview(studentId: string) {
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions,
       COUNTIF(attendance_status = 'ABSENT') AS absent_sessions
     FROM ${TABLE}
-    WHERE student_user_id = '${escapeStr(studentId)}' AND is_current_semester = 1
+    WHERE student_user_id = @studentId AND is_current_semester = 1
     GROUP BY student_user_id, student_name, batch_section_name, institute_id, institute_name, derived_semester_title
     LIMIT 1`;
-  const rows = await bqQuery(sql);
+  const rows = await bqQuery(sql, { studentId });
   if (!rows.length) return null;
   const r = rows[0];
   const total = Number(r.total_sessions ?? 0);
@@ -70,9 +73,9 @@ export async function getStudentSubjects(studentId: string) {
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions,
       COUNTIF(attendance_status = 'ABSENT') AS absent_sessions
     FROM ${TABLE}
-    WHERE student_user_id = '${escapeStr(studentId)}' AND is_current_semester = 1
+    WHERE student_user_id = @studentId AND is_current_semester = 1
     GROUP BY subject_title ORDER BY total_sessions DESC`;
-  const rows = await bqQuery(sql);
+  const rows = await bqQuery(sql, { studentId });
   if (!rows.length) return null;
   return rows.map((r) => {
     const total = Number(r.total_sessions ?? 0);
@@ -95,9 +98,10 @@ export async function getStudentRecentSessions(studentId: string) {
   const sql = `
     SELECT CAST(date AS STRING) AS date, session_title, subject_title, attendance_status, marking_method
     FROM ${TABLE}
-    WHERE student_user_id = '${escapeStr(studentId)}' AND is_current_semester = 1
-    ORDER BY date DESC, session_section_id DESC`;
-  const rows = await bqQuery(sql);
+    WHERE student_user_id = @studentId AND is_current_semester = 1
+    ORDER BY date DESC, session_section_id DESC
+    LIMIT 500`;
+  const rows = await bqQuery(sql, { studentId });
   if (!rows.length) return null;
   return rows.map((r) => ({
     date: r.date ?? "",
@@ -110,16 +114,20 @@ export async function getStudentRecentSessions(studentId: string) {
 
 // ── Staff dashboards (scoped) ─────────────────────────────────────────
 export async function searchStudents(q: string, limit: number, scope?: Scope) {
-  let where = scopeClause(scope);
-  const safe = q && q.trim() ? sanitizeLike(q.trim()) : "";
-  if (safe) {
-    where += ` AND (LOWER(student_name) LIKE LOWER('%${safe}%') OR student_user_id = '${escapeStr(q.trim())}')`;
+  const { sql: where, params } = scopeClause(scope);
+  let whereSql = where;
+  const term = q?.trim() ?? "";
+  if (term) {
+    whereSql += ` AND (LOWER(student_name) LIKE LOWER(CONCAT('%', @term, '%')) OR student_user_id = @termExact)`;
+    params.term = term;
+    params.termExact = term;
   }
+  const lim = Math.min(Number(limit) || 20, 50);
   const sql = `
     SELECT DISTINCT student_user_id, student_name, batch_section_name, institute_id, institute_name
-    FROM ${TABLE} WHERE ${where}
-    LIMIT ${Math.min(Number(limit) || 20, 50)}`;
-  const rows = await bqQuery(sql);
+    FROM ${TABLE} WHERE ${whereSql}
+    LIMIT @lim`;
+  const rows = await bqQuery(sql, { ...params, lim });
   return rows.map((r) => ({
     studentUserId: r.student_user_id ?? "",
     studentName: r.student_name ?? "",
@@ -130,6 +138,7 @@ export async function searchStudents(q: string, limit: number, scope?: Scope) {
 }
 
 export async function getCampusSummary(scope?: Scope) {
+  const { sql: where, params } = scopeClause(scope);
   const sql = `
     SELECT institute_name,
       COUNT(DISTINCT student_user_id) AS students,
@@ -137,9 +146,9 @@ export async function getCampusSummary(scope?: Scope) {
       COUNT(DISTINCT subject_title) AS subjects,
       COUNT(*) AS total_sessions,
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions
-    FROM ${TABLE} WHERE ${scopeClause(scope)}
+    FROM ${TABLE} WHERE ${where}
     GROUP BY institute_name ORDER BY students DESC`;
-  const rows = await bqQuery(sql);
+  const rows = await bqQuery(sql, params);
   return rows.map((r) => {
     const total = Number(r.total_sessions ?? 0);
     const present = Number(r.present_sessions ?? 0);
@@ -156,14 +165,15 @@ export async function getCampusSummary(scope?: Scope) {
 }
 
 export async function getSubjectSummary(scope?: Scope) {
+  const { sql: where, params } = scopeClause(scope);
   const sql = `
     SELECT subject_title,
       COUNT(DISTINCT student_user_id) AS students,
       COUNT(*) AS total_sessions,
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions
-    FROM ${TABLE} WHERE ${scopeClause(scope)}
+    FROM ${TABLE} WHERE ${where}
     GROUP BY subject_title ORDER BY present_sessions / NULLIF(total_sessions,0) ASC`;
-  const rows = await bqQuery(sql);
+  const rows = await bqQuery(sql, params);
   return rows.map((r) => {
     const total = Number(r.total_sessions ?? 0);
     const present = Number(r.present_sessions ?? 0);
@@ -178,14 +188,15 @@ export async function getSubjectSummary(scope?: Scope) {
 }
 
 export async function getSectionSummary(scope?: Scope) {
+  const { sql: where, params } = scopeClause(scope);
   const sql = `
     SELECT institute_name, batch_section_name,
       COUNT(DISTINCT student_user_id) AS students,
       COUNT(*) AS total_sessions,
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions
-    FROM ${TABLE} WHERE ${scopeClause(scope)}
+    FROM ${TABLE} WHERE ${where}
     GROUP BY institute_name, batch_section_name ORDER BY institute_name, batch_section_name`;
-  const rows = await bqQuery(sql);
+  const rows = await bqQuery(sql, params);
   return rows.map((r) => {
     const total = Number(r.total_sessions ?? 0);
     const present = Number(r.present_sessions ?? 0);
@@ -201,21 +212,24 @@ export async function getSectionSummary(scope?: Scope) {
 }
 
 export async function getStudentsList(scope: Scope | undefined, opts: { search?: string; limit?: number }) {
-  let where = scopeClause(scope);
-  const safe = opts.search && opts.search.trim() ? sanitizeLike(opts.search.trim()) : "";
-  if (safe) {
-    where += ` AND LOWER(student_name) LIKE LOWER('%${safe}%')`;
+  const { sql: where, params } = scopeClause(scope);
+  let whereSql = where;
+  const term = opts.search?.trim() ?? "";
+  if (term) {
+    whereSql += ` AND LOWER(student_name) LIKE LOWER(CONCAT('%', @term, '%'))`;
+    params.term = term;
   }
+  const lim = Math.min(Number(opts.limit) || 200, 1000);
   const sql = `
     SELECT student_user_id, ANY_VALUE(student_name) AS student_name,
       ANY_VALUE(institute_name) AS institute_name, ANY_VALUE(batch_section_name) AS batch_section_name,
       COUNT(*) AS total_sessions,
       COUNTIF(attendance_status = 'PRESENT') AS present_sessions
-    FROM ${TABLE} WHERE ${where}
+    FROM ${TABLE} WHERE ${whereSql}
     GROUP BY student_user_id
     ORDER BY present_sessions / NULLIF(total_sessions,0) ASC
-    LIMIT ${Math.min(Number(opts.limit) || 200, 1000)}`;
-  const rows = await bqQuery(sql);
+    LIMIT @lim`;
+  const rows = await bqQuery(sql, { ...params, lim });
   return rows.map((r) => {
     const total = Number(r.total_sessions ?? 0);
     const present = Number(r.present_sessions ?? 0);

@@ -12,6 +12,19 @@ const SubjectSchema = new Schema(
   { _id: false },
 );
 
+// Per-session detail for the SPI course modal (BUG-2: served from the snapshot
+// instead of a live BigQuery hit). Capped to the most recent N during sync.
+const SessionSchema = new Schema(
+  {
+    date: String,
+    sessionTitle: String,
+    subjectTitle: String,
+    attendanceStatus: String,
+    markingMethod: String,
+  },
+  { _id: false },
+);
+
 const StudentSnapshotSchema = new Schema(
   {
     studentUserId: { type: String, required: true, unique: true, index: true },
@@ -25,6 +38,7 @@ const StudentSnapshotSchema = new Schema(
     absentSessions: Number,
     attendancePercentage: Number,
     subjects: { type: [SubjectSchema], default: [] },
+    recentSessions: { type: [SessionSchema], default: [] },
     syncedAt: { type: Date, default: Date.now, index: true },
   },
   { timestamps: true },

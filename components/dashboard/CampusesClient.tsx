@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Download } from "lucide-react";
 import { PageLoader } from "@/components/ui/Loader";
 import { pctTextClass, cn } from "@/lib/utils";
+import { objectsToCsv, downloadCsv } from "@/lib/csv";
 import FilterBar from "@/components/ui/FilterBar";
 import FilterDrawer, { type FilterGroup, type FilterValue, countActive } from "@/components/ui/FilterDrawer";
 
@@ -76,6 +78,30 @@ export default function CampusesClient() {
     return out;
   }, [filters]);
 
+  function exportCsv() {
+    const date = new Date().toISOString().slice(0, 10);
+    if (view === "campus") {
+      const csv = objectsToCsv(
+        campusRows.map((c) => ({ campus: c.instituteName, sections: c.sections, subjects: c.subjects, students: c.students, attendance: `${c.attendancePercentage}%` })),
+        [
+          { key: "campus", label: "Campus" }, { key: "sections", label: "Sections" },
+          { key: "subjects", label: "Subjects" }, { key: "students", label: "Students" },
+          { key: "attendance", label: "Attendance %" },
+        ],
+      );
+      downloadCsv(`campuses-${date}.csv`, csv);
+    } else {
+      const csv = objectsToCsv(
+        sectionRows.map((s) => ({ campus: s.instituteName, section: s.batchSectionName, students: s.students, attendance: `${s.attendancePercentage}%` })),
+        [
+          { key: "campus", label: "Campus" }, { key: "section", label: "Section" },
+          { key: "students", label: "Students" }, { key: "attendance", label: "Attendance %" },
+        ],
+      );
+      downloadCsv(`sections-${date}.csv`, csv);
+    }
+  }
+
   if (loading) return <PageLoader />;
   if (!data) return null;
 
@@ -102,7 +128,14 @@ export default function CampusesClient() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
           <h2 className="text-base font-semibold text-gray-900">{view === "campus" ? "Campus Breakdown" : "Section Breakdown"}</h2>
-          <span className="text-xs text-gray-400">{shown} of {total} {view === "campus" ? "campuses" : "sections"}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400">{shown} of {total} {view === "campus" ? "campuses" : "sections"}</span>
+            <button type="button" onClick={exportCsv} disabled={!shown}
+              title="Export current view to CSV"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50">
+              <Download size={14} /> Export
+            </button>
+          </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin max-h-[68vh]">
           <table className="w-full text-sm">

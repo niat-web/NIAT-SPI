@@ -5,11 +5,21 @@ import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/User";
 import { createToken, sessionCookieOptions } from "@/lib/auth";
 import { SESSION_COOKIE, type Role } from "@/lib/constants";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  // Throttle brute-force attempts: 10 tries per IP per minute (IMP-6).
+  const limit = rateLimit(`login:${clientIp(req)}`, 10, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } },
+    );
+  }
+
   let body: { email?: string; password?: string };
   try {
     body = await req.json();
