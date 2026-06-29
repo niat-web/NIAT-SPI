@@ -53,18 +53,30 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-12 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-brand-600 mb-3">NIAT · Skill Performance Index</p>
-        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
-          A skill score that tracks how<br className="hidden sm:block" /> you learn and how skill-ready you are.
-        </h1>
-        <p className="text-gray-500 mt-5 max-w-2xl mx-auto leading-relaxed">
-          The SPI gives a complete view of every learner&apos;s engagement, performance and readiness in each
-          course — built from continuous learning, assessment participation and skill mastery.
-        </p>
-        <div className="mt-8 inline-flex items-center gap-2 rounded-full bg-white border border-gray-200 px-4 py-2 text-sm text-gray-500 shadow-sm">
-          <span>Your personal report opens at</span>
-          <code className="bg-gray-50 border border-gray-200 rounded px-1.5 py-0.5 text-gray-700">/spi/&lt;your-id&gt;</code>
+      <section className="relative overflow-hidden">
+        {/* soft brand glow */}
+        <div className="pointer-events-none absolute inset-x-0 -top-32 mx-auto h-72 max-w-3xl rounded-full bg-brand-200/40 blur-3xl" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-14 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-semibold text-brand-700 mb-5">
+            NIAT · Skill Performance Index
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
+            A single skill score that tracks how<br className="hidden sm:block" /> you learn and how skill-ready you are.
+          </h1>
+          <p className="text-gray-500 mt-5 max-w-2xl mx-auto leading-relaxed">
+            The SPI gives a complete view of every learner&apos;s engagement, performance and readiness in each
+            course — built from continuous learning, assessment participation and skill mastery.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/staff-login"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 shadow-sm shadow-brand-200 transition-colors">
+              <ShieldCheck size={16} /> Staff sign in
+            </Link>
+            <a href="#how-it-works"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white text-gray-700 text-sm font-semibold px-5 py-2.5 hover:bg-gray-50 transition-colors">
+              How it works <ArrowRight size={15} />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -82,7 +94,7 @@ export default function Landing() {
       </section>
 
       {/* How you're assessed */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+      <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 scroll-mt-20">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
           <div className="flex items-center gap-2 mb-1"><ClipboardList size={18} className="text-brand-600" /><h2 className="text-xl font-bold">How you&apos;re assessed</h2></div>
           <p className="text-sm text-gray-500 mb-6">Four checkpoints build your course score — the Final Skill Assessment matters most.</p>
