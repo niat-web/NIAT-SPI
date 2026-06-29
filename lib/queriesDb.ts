@@ -169,6 +169,7 @@ export async function getStudentOverview(studentId: string) {
     totalSessions: d.totalSessions ?? 0, presentSessions: d.presentSessions ?? 0, absentSessions: d.absentSessions ?? 0,
     attendancePercentage: d.attendancePercentage ?? 0, requiredPercentage: REQUIRED_PCT,
     isRecoveryMode: (d.attendancePercentage ?? 0) < REQUIRED_PCT, coursesInRecovery,
+    syncedAt: d.syncedAt ? new Date(d.syncedAt).toISOString() : null,
   };
 }
 

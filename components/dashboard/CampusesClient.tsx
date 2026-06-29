@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/ui/Loader";
 import { pctTextClass, cn } from "@/lib/utils";
 import FilterBar from "@/components/ui/FilterBar";
 import FilterDrawer, { type FilterGroup, type FilterValue, countActive } from "@/components/ui/FilterDrawer";
@@ -76,7 +76,7 @@ export default function CampusesClient() {
     return out;
   }, [filters]);
 
-  if (loading) return <Skeleton className="h-96 w-full rounded-xl" />;
+  if (loading) return <PageLoader />;
   if (!data) return null;
 
   const total = view === "campus" ? data.campuses.length : data.sections.length;

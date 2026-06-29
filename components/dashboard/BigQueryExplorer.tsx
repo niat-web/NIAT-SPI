@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Database, Table2, ChevronRight, Loader2, AlertTriangle, RefreshCw } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { InlineLoader } from "@/components/ui/Loader";
 import { cn } from "@/lib/utils";
 
 interface Dataset { id: string; location: string }
@@ -81,7 +81,7 @@ export default function BigQueryExplorer() {
         </div>
         <div className="p-2">
           {!table ? <Empty text="Select a table to preview its rows." big />
-            : pvLoading ? <div className="p-3 space-y-2">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-7 w-full" />)}</div>
+            : pvLoading ? <InlineLoader />
             : pvErr ? <ErrBox text={pvErr} />
             : preview && (
               <>
@@ -143,7 +143,7 @@ function Row({ active, onClick, label, sub }: { active: boolean; onClick: () => 
     </button>
   );
 }
-function ListSkeleton() { return <div className="space-y-1.5 p-1">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full rounded-lg" />)}</div>; }
+function ListSkeleton() { return <InlineLoader className="py-8" />; }
 function Empty({ text, big }: { text: string; big?: boolean }) { return <div className={cn("text-sm text-gray-400 flex items-center justify-center", big ? "h-64" : "py-6 px-3 text-center")}>{text}</div>; }
 function ErrBox({ text }: { text: string }) {
   return <div className="m-2 flex items-start gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-700"><AlertTriangle size={15} className="mt-0.5 shrink-0" />{text}</div>;

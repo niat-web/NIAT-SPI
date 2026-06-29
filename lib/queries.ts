@@ -59,6 +59,7 @@ export async function getStudentOverview(studentId: string) {
     requiredPercentage: REQUIRED_PCT,
     isRecoveryMode: pct(present, total) < REQUIRED_PCT,
     coursesInRecovery,
+    syncedAt: null as string | null,
   };
 }
 

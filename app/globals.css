@@ -38,3 +38,21 @@ body {
   background: #d1d5db;
   border-radius: 9999px;
 }
+
+/* Indeterminate loading bar — a highlight sweeps across twice per second. */
+@keyframes niat-loadbar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+.niat-loadbar-fill {
+  animation: niat-loadbar 0.5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .niat-loadbar-fill {
+    animation-duration: 1.2s;
+  }
+}

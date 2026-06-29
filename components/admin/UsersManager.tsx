@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Pencil, Trash2, X, Loader2, ShieldCheck } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { InlineLoader } from "@/components/ui/Loader";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import FilterBar from "@/components/ui/FilterBar";
@@ -231,7 +231,7 @@ export default function UsersManager() {
             </tr></thead>
             <tbody>
               {loading
-                ? Array.from({ length: 6 }).map((_, i) => <tr key={i} className="border-b border-gray-50"><td colSpan={5} className="px-5 py-3"><Skeleton className="h-5 w-full" /></td></tr>)
+                ? <tr><td colSpan={5} className="px-5"><InlineLoader /></td></tr>
                 : filtered.map((u) => (
                   <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50">
                     <td className="px-5 py-3"><p className="font-medium text-gray-800">{u.name}</p><p className="text-xs text-gray-400">{u.email}</p></td>

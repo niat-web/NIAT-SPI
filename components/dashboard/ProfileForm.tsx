@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Save, CheckCircle2, User as UserIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/ui/Loader";
 
 interface Profile {
   name: string; email: string; role: string; roleLabel: string;
@@ -40,7 +40,7 @@ export default function ProfileForm() {
     } finally { setSaving(false); }
   }
 
-  if (loading) return <Skeleton className="h-96 w-full max-w-xl rounded-2xl" />;
+  if (loading) return <PageLoader />;
   if (!p) return <p className="text-sm text-gray-400">Couldn&apos;t load your profile.</p>;
 
   const scope = [...p.campuses, ...p.subjects];

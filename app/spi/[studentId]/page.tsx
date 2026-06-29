@@ -8,6 +8,7 @@ import {
 import { format } from "date-fns";
 import { cn, pctColor, pctTextClass } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/ui/Loader";
 import { ASSESSMENT_WEIGHTS } from "@/lib/constants";
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -18,6 +19,22 @@ interface Overview {
   attendancePercentage: number;
   requiredPercentage: number;
   coursesInRecovery: number;
+  syncedAt: string | null;
+}
+
+// Human-friendly "last updated" from the nightly BigQuery → MongoDB sync.
+function lastUpdatedLabel(syncedAt: string | null): string {
+  if (!syncedAt) return "Live data";
+  const t = new Date(syncedAt).getTime();
+  if (Number.isNaN(t)) return "Live data";
+  const diff = Date.now() - t;
+  if (diff < 60_000) return "Updated just now";
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 60) return `Updated ${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `Updated ${hrs} hour${hrs !== 1 ? "s" : ""} ago`;
+  const days = Math.floor(hrs / 24);
+  return `Updated ${days} day${days !== 1 ? "s" : ""} ago`;
 }
 interface Subject {
   subjectTitle: string;
@@ -313,13 +330,7 @@ function StudentDashboard({ studentId }: { studentId: string }) {
   const recoverySubjects = useMemo(() => subjects.filter((s) => s.isRecoveryMode), [subjects]);
 
   if (loading) {
-    return (
-      <div className="space-y-5 p-6 max-w-5xl mx-auto">
-        <Skeleton className="h-8 w-48" /><Skeleton className="h-6 w-64" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5"><Skeleton className="h-56 rounded-xl" /><Skeleton className="h-56 rounded-xl" /></div>
-        <Skeleton className="h-72 rounded-xl" /><Skeleton className="h-96 rounded-xl" />
-      </div>
-    );
+    return <PageLoader className="min-h-[100dvh]" />;
   }
   if (ov.notFound || !overview) return <NoStudentScreen />;
 
@@ -335,7 +346,7 @@ function StudentDashboard({ studentId }: { studentId: string }) {
           <p className="text-sm text-gray-500 mt-1">Current semester · classes still in progress</p>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
-          <RefreshCw size={12} /><span>Updated just now</span>
+          <RefreshCw size={12} /><span>{lastUpdatedLabel(overview.syncedAt)}</span>
         </div>
       </div>
 

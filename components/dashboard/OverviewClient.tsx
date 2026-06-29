@@ -6,7 +6,7 @@ import {
 } from "recharts";
 import { Building2, GraduationCap, BookOpen, AlertTriangle, RefreshCw } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/ui/Loader";
 import { pctColor, pctTextClass } from "@/lib/utils";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
 
@@ -44,12 +44,7 @@ export default function OverviewClient({ role, scopeLabel }: { role: Role; scope
   }, []);
 
   if (loading) {
-    return (
-      <div className="space-y-5">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}</div>
-        <Skeleton className="h-80 rounded-xl" /><Skeleton className="h-64 rounded-xl" />
-      </div>
-    );
+    return <PageLoader />;
   }
   if (error) return <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">Couldn&apos;t load data: {error}</div>;
   if (!data) return null;

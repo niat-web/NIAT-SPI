@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Loader2, Building2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { InlineLoader } from "@/components/ui/Loader";
 
 interface CampusRow { id: string; name: string; instituteId: string; code: string; location: string; isActive: boolean }
 
@@ -59,7 +59,7 @@ export default function CampusesManager() {
       {err && <p className="text-sm text-red-600">{err}</p>}
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        {loading ? <div className="p-5 space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-6 w-full" />)}</div> : (
+        {loading ? <InlineLoader /> : (
           <table className="w-full text-sm">
             <thead><tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100 bg-gray-50">
               <th className="px-5 py-3 font-semibold">Campus</th><th className="px-3 py-3 font-semibold">Location</th><th className="px-5 py-3 font-semibold text-right">Actions</th>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { InlineLoader } from "@/components/ui/Loader";
 import { pctTextClass } from "@/lib/utils";
 import FilterBar from "@/components/ui/FilterBar";
 import FilterDrawer, { type FilterGroup, type FilterValue, countActive } from "@/components/ui/FilterDrawer";
@@ -135,9 +135,9 @@ export default function StudentsClient() {
             </tr></thead>
             <tbody>
               {loading && rows.length === 0
-                ? Array.from({ length: 8 }).map((_, i) => (
-                    <tr key={i} className="border-b border-gray-50"><td colSpan={5} className="px-5 py-3"><Skeleton className="h-5 w-full" /></td></tr>
-                  ))
+                ? (
+                    <tr><td colSpan={5} className="px-5"><InlineLoader /></td></tr>
+                  )
                 : paged.map((r) => (
                     <tr key={r.studentUserId} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="px-5 py-3 font-medium text-gray-800">{r.studentName}</td>
