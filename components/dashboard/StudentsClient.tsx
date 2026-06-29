@@ -34,7 +34,7 @@ export default function StudentsClient() {
 
   useEffect(() => {
     setLoading(true);
-    const url = `/api/dashboard/students?limit=500${debounced ? `&q=${encodeURIComponent(debounced)}` : ""}`;
+    const url = `/api/dashboard/students?limit=5000${debounced ? `&q=${encodeURIComponent(debounced)}` : ""}`;
     fetch(url).then((r) => (r.ok ? r.json() : [])).then(setRows).finally(() => setLoading(false));
   }, [debounced]);
 
