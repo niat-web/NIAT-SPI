@@ -25,7 +25,7 @@ function StatCard({ icon, label, value, hint }: { icon: React.ReactNode; label: 
   );
 }
 
-export default function OverviewClient({ role, scopeLabel }: { role: Role; scopeLabel: string }) {
+export default function OverviewClient({ firstName, role, scopeLabel }: { firstName: string; role: Role; scopeLabel: string }) {
   const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,15 +62,21 @@ export default function OverviewClient({ role, scopeLabel }: { role: Role; scope
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-medium text-brand-700">
-          {ROLE_LABELS[role]} · {scopeLabel}
-        </span>
-        {data.syncedAt && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 border border-green-100 px-3 py-1 text-xs font-medium text-green-700" title={new Date(data.syncedAt).toLocaleString()}>
-            <RefreshCw size={11} /> Data updated {formatDistanceToNow(new Date(data.syncedAt), { addSuffix: true })}
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome, {firstName}</h1>
+          <p className="text-sm text-gray-500 mt-1">Live attendance &amp; eligibility across your scope. Scores and SPI components arrive soon.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-medium text-brand-700">
+            {ROLE_LABELS[role]} · {scopeLabel}
           </span>
-        )}
+          {data.syncedAt && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 border border-green-100 px-3 py-1 text-xs font-medium text-green-700" title={new Date(data.syncedAt).toLocaleString()}>
+              <RefreshCw size={11} /> Data updated {formatDistanceToNow(new Date(data.syncedAt), { addSuffix: true })}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

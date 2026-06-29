@@ -1,6 +1,5 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 import OverviewClient from "@/components/dashboard/OverviewClient";
 
 export const dynamic = "force-dynamic";
@@ -21,11 +20,8 @@ export default async function DashboardOverview() {
 
   return (
     <div className="p-5 sm:p-8">
-      <PageHeader
-        title={`Welcome, ${session.name.split(" ")[0]}`}
-        subtitle="Live attendance & eligibility across your scope. Scores and SPI components arrive soon."
-      />
       <OverviewClient
+        firstName={session.name.split(" ")[0]}
         role={session.role}
         scopeLabel={scopeLabel(session.role, session.campuses, session.subjects)}
       />
