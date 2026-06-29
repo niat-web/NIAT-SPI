@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   LayoutDashboard, GraduationCap, Building2, UserCog, LogOut, Menu, X,
   User, Database, ChevronRight,
@@ -15,7 +15,7 @@ interface NavItem { href: string; label: string; icon: React.ReactNode }
 
 function MenuLink({ href, icon, label, onClick }: { href: string; icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
-    <Link href={href} onClick={onClick}
+    <Link href={href} prefetch onClick={onClick}
       className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
       {icon} {label}
     </Link>
@@ -29,7 +29,21 @@ export default function Sidebar({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [, startTransition] = useTransition();
+  // The route the user just clicked — highlighted immediately so the active
+  // state never lags behind the (first-visit) bundle/RSC fetch.
+  const [pending, setPending] = useState<string | null>(null);
   const isSuperAdmin = role === "superadmin";
+
+  // Clear the optimistic target once the URL actually reflects it.
+  if (pending && pathname === pending) setPending(null);
+
+  function go(href: string) {
+    setOpen(false);
+    if (href === pathname) return;
+    setPending(href);
+    startTransition(() => router.push(href));
+  }
 
   const nav: NavItem[] = [
     { href: "/dashboard", label: "Overview", icon: <LayoutDashboard size={18} /> },
@@ -50,9 +64,12 @@ export default function Sidebar({
   }
 
   const Item = ({ item }: { item: NavItem }) => {
-    const active = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+    // While a navigation is pending, only the clicked target is active; otherwise
+    // fall back to matching the live pathname.
+    const matchPath = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+    const active = pending ? pending === item.href : matchPath;
     return (
-      <Link href={item.href} onClick={() => setOpen(false)}
+      <Link href={item.href} prefetch onClick={(e) => { e.preventDefault(); go(item.href); }}
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
           active ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-100",
