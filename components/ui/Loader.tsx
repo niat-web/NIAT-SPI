@@ -1,5 +1,5 @@
-import { Gauge } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/Logo";
 
 /**
  * Indeterminate loading bar — a blue highlight sweeps across the track twice
@@ -12,7 +12,7 @@ export function LoadingBar({ className }: { className?: string }) {
       aria-label="Loading"
       className={cn("relative h-1.5 w-40 overflow-hidden rounded-full bg-gray-200", className)}
     >
-      <div className="niat-loadbar-fill absolute inset-y-0 left-0 w-2/5 rounded-full bg-blue-600" />
+      <div className="niat-loadbar-fill absolute inset-y-0 left-0 w-2/5 rounded-full bg-[#F25C05]" />
     </div>
   );
 }
@@ -24,12 +24,7 @@ export function LoadingBar({ className }: { className?: string }) {
 export function PageLoader({ className }: { className?: string }) {
   return (
     <div className={cn("flex min-h-[60vh] w-full flex-col items-center justify-center gap-5", className)}>
-      <div className="flex items-center gap-2.5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-          <Gauge size={20} />
-        </div>
-        <span className="text-lg font-bold tracking-tight text-gray-900">NIAT SPI</span>
-      </div>
+      <Logo size={44} className="[&_p]:text-lg" />
       <LoadingBar />
     </div>
   );

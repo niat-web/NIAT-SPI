@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  LayoutDashboard, GraduationCap, Building2, UserCog, LogOut, Gauge, Menu, X,
+  LayoutDashboard, GraduationCap, Building2, UserCog, LogOut, Menu, X,
   User, Database, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo, LogoMark } from "@/components/ui/Logo";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
 
 interface NavItem { href: string; label: string; icon: React.ReactNode }
@@ -64,8 +65,11 @@ export default function Sidebar({
   const Inner = (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2.5 px-4 py-5">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center"><Gauge size={18} /></div>
-        <div><p className="font-bold text-gray-900 leading-tight">NIAT SPI</p><p className="text-[11px] text-gray-400">Staff Console</p></div>
+        <LogoMark size={36} />
+        <div>
+          <p className="font-extrabold tracking-tight text-gray-900 leading-tight">NIAT <span className="text-[#F25C05]">SPI</span></p>
+          <p className="text-[11px] text-gray-400">Staff Console</p>
+        </div>
       </div>
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-thin">
         {nav.map((i) => <Item key={i.href} item={i} />)}
@@ -117,7 +121,7 @@ export default function Sidebar({
     <>
       {/* Mobile top bar */}
       <div className="md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
-        <div className="flex items-center gap-2"><Gauge size={18} className="text-blue-600" /><span className="font-bold">NIAT SPI</span></div>
+        <Logo size={28} />
         <button onClick={() => setOpen(true)} className="p-2"><Menu size={20} /></button>
       </div>
       {open && (

@@ -3,7 +3,8 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Gauge, Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
+import { LogoMark } from "@/components/ui/Logo";
 
 function LoginForm() {
   const router = useRouter();
@@ -47,8 +48,8 @@ function LoginForm() {
           <ArrowLeft size={14} /> Back to home
         </Link>
         <div className="text-center mb-7">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-600 text-white mb-4 shadow-lg shadow-blue-200">
-            <Gauge size={22} />
+          <div className="inline-flex mb-4 rounded-2xl shadow-lg shadow-orange-200">
+            <LogoMark size={48} />
           </div>
           <h1 className="text-xl font-bold text-gray-900">NIAT SPI · Staff Login</h1>
           <p className="text-sm text-gray-500 mt-1">Sign in once — you&apos;ll stay logged in for 30 days.</p>

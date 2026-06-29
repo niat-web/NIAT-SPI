@@ -1,8 +1,9 @@
 import Link from "next/link";
 import {
-  Gauge, CalendarCheck, AlertTriangle, ClipboardList, BookOpen, Award,
+  CalendarCheck, AlertTriangle, ClipboardList, BookOpen, Award,
   ShieldCheck, TrendingUp, Briefcase, Users, Star, ArrowRight,
 } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 const assessments = [
   { label: "Classroom Quizzes", weight: "10%", sub: "2 per topic — topic-level clarity" },
@@ -44,10 +45,7 @@ export default function Landing() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center"><Gauge size={17} /></div>
-            <span className="font-bold">NIAT SPI</span>
-          </div>
+          <Logo size={30} />
           <Link href="/staff-login" className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors">
             <ShieldCheck size={15} /> Staff sign in
           </Link>
