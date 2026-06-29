@@ -69,10 +69,10 @@ function LoginForm() {
   return (
     <main className="min-h-[100dvh] grid lg:grid-cols-2 bg-white">
       {/* ── Left: brand panel ───────────────────────────────────────── */}
-      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[#FF8A1E] to-[#F25C05] p-12 text-white">
+      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[#FFB877] to-[#FF8A1E] p-12 text-white">
         {/* soft decorative blobs */}
-        <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-white/10 blur-2xl" />
-        <div className="pointer-events-none absolute bottom-0 -left-20 h-72 w-72 rounded-full bg-black/10 blur-2xl" />
+        <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-white/15 blur-2xl" />
+        <div className="pointer-events-none absolute bottom-0 -left-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
 
         <div className="relative flex items-center gap-3">
           <div className="rounded-2xl bg-white/15 p-1.5 backdrop-blur">
