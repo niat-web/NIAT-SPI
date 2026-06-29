@@ -28,6 +28,7 @@ export default function StudentsClient() {
   const [filters, setFilters] = useState<FilterValue>({});
   const [pageSize, setPageSize] = useState(200);
   const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<"default" | "high" | "low">("default");
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q), 350);
@@ -80,14 +81,20 @@ export default function StudentsClient() {
     });
   }, [rows, filters]);
 
-  // Reset to first page whenever the result set or page size changes.
-  useEffect(() => { setPage(1); }, [debounced, filters, pageSize]);
+  const sorted = useMemo(() => {
+    if (sort === "high") return [...filtered].sort((a, b) => b.attendancePercentage - a.attendancePercentage);
+    if (sort === "low") return [...filtered].sort((a, b) => a.attendancePercentage - b.attendancePercentage);
+    return filtered; // default — as returned by the server
+  }, [filtered, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  // Reset to first page whenever the result set, sort or page size changes.
+  useEffect(() => { setPage(1); }, [debounced, filters, pageSize, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const pageSafe = Math.min(page, totalPages);
   const paged = useMemo(
-    () => filtered.slice((pageSafe - 1) * pageSize, pageSafe * pageSize),
-    [filtered, pageSafe, pageSize],
+    () => sorted.slice((pageSafe - 1) * pageSize, pageSafe * pageSize),
+    [sorted, pageSafe, pageSize],
   );
 
   const chips = useMemo(() => {
@@ -106,6 +113,14 @@ export default function StudentsClient() {
       <FilterBar
         search={q} onSearch={setQ} placeholder="Search students by name…"
         onOpenFilters={() => setDrawer(true)} activeCount={countActive(filters)} loading={loading} chips={chips}
+        rightSlot={
+          <select value={sort} onChange={(e) => setSort(e.target.value as "default" | "high" | "low")}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <option value="default">Sort: Default</option>
+            <option value="high">Attendance: High to Low</option>
+            <option value="low">Attendance: Low to High</option>
+          </select>
+        }
       />
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">

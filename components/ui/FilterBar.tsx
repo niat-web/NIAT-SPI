@@ -5,7 +5,7 @@ import { Search, SlidersHorizontal, Loader2, X } from "lucide-react";
 export interface ActiveChip { key: string; label: string; onRemove: () => void }
 
 export default function FilterBar({
-  search, onSearch, placeholder = "Search…", onOpenFilters, activeCount, loading, chips,
+  search, onSearch, placeholder = "Search…", onOpenFilters, activeCount, loading, chips, rightSlot,
 }: {
   search: string;
   onSearch: (v: string) => void;
@@ -14,6 +14,7 @@ export default function FilterBar({
   activeCount: number;
   loading?: boolean;
   chips?: ActiveChip[];
+  rightSlot?: React.ReactNode;
 }) {
   return (
     <div className="space-y-3">
@@ -31,6 +32,7 @@ export default function FilterBar({
             <span className="ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-blue-600 text-white text-[10px] font-bold px-1">{activeCount}</span>
           )}
         </button>
+        {rightSlot}
       </div>
 
       {chips && chips.length > 0 && (
