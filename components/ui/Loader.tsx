@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/Logo";
 
 /**
- * Indeterminate loading bar — a blue highlight sweeps across the track twice
+ * Indeterminate loading bar — a brand-orange highlight sweeps across the track twice
  * per second (the `niat-loadbar-fill` keyframe in globals.css runs at 0.5s).
  */
 export function LoadingBar({ className }: { className?: string }) {

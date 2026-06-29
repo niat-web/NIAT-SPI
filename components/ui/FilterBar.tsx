@@ -22,14 +22,14 @@ export default function FilterBar({
         <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input value={search} onChange={(e) => onSearch(e.target.value)} placeholder={placeholder}
-            className="w-full rounded-lg border border-gray-200 bg-white pl-9 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            className="w-full rounded-lg border border-gray-200 bg-white pl-9 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
           {loading && <Loader2 size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 animate-spin" />}
         </div>
         <button onClick={onOpenFilters}
           className="relative inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50">
           <SlidersHorizontal size={16} /> Filters
           {activeCount > 0 && (
-            <span className="ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-blue-600 text-white text-[10px] font-bold px-1">{activeCount}</span>
+            <span className="ml-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-brand-600 text-white text-[10px] font-bold px-1">{activeCount}</span>
           )}
         </button>
         {rightSlot}
@@ -38,9 +38,9 @@ export default function FilterBar({
       {chips && chips.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {chips.map((c) => (
-            <span key={c.key} className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-medium pl-2.5 pr-1.5 py-1">
+            <span key={c.key} className="inline-flex items-center gap-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-medium pl-2.5 pr-1.5 py-1">
               {c.label}
-              <button onClick={c.onRemove} className="rounded-full hover:bg-blue-100 p-0.5"><X size={11} /></button>
+              <button onClick={c.onRemove} className="rounded-full hover:bg-brand-100 p-0.5"><X size={11} /></button>
             </span>
           ))}
         </div>

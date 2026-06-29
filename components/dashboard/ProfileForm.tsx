@@ -49,7 +49,7 @@ export default function ProfileForm() {
     <div className="max-w-xl space-y-5">
       {/* Identity card */}
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm flex items-center gap-4">
-        <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+        <div className="w-14 h-14 rounded-full bg-brand-600 text-white flex items-center justify-center text-xl font-bold">
           {p.name.slice(0, 1).toUpperCase()}
         </div>
         <div>
@@ -63,7 +63,7 @@ export default function ProfileForm() {
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full name</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required
-            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email</label>
@@ -75,7 +75,7 @@ export default function ProfileForm() {
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">Your scope</label>
             <div className="flex flex-wrap gap-1.5">
-              {scope.map((s) => <span key={s} className="rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs px-2.5 py-1">{s}</span>)}
+              {scope.map((s) => <span key={s} className="rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs px-2.5 py-1">{s}</span>)}
             </div>
           </div>
         )}
@@ -85,10 +85,10 @@ export default function ProfileForm() {
           <div className="space-y-3">
             <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Current password" autoComplete="current-password"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
             <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New password (leave blank to keep current)" autoComplete="new-password"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export default function ProfileForm() {
         )}
 
         <button type="submit" disabled={saving}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5">
+          className="inline-flex items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5">
           {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />} Save changes
         </button>
       </form>

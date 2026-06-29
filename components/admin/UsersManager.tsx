@@ -25,7 +25,7 @@ function Chips({ options, value, onChange }: { options: string[]; value: string[
         return (
           <button type="button" key={o} onClick={() => onChange(on ? value.filter((x) => x !== o) : [...value, o])}
             className={cn("rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
-              on ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>
+              on ? "bg-brand-600 border-brand-600 text-white" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300")}>
             {o}
           </button>
         );
@@ -98,7 +98,7 @@ function UserModal({
         <div className="px-5 py-4 border-t border-gray-100 flex justify-end gap-2 sticky bottom-0 bg-white">
           <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
           <button type="submit" disabled={saving}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-60">
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold disabled:opacity-60">
             {saving ? <Loader2 size={15} className="animate-spin" /> : <ShieldCheck size={15} />} Save
           </button>
         </div>
@@ -112,7 +112,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div>
       <label className="block text-xs font-semibold text-gray-600 mb-1.5">{label}</label>
       {children}
-      <style jsx>{`:global(.inp){width:100%;border:1px solid #e5e7eb;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem;outline:none}:global(.inp:focus){box-shadow:0 0 0 2px #93c5fd}`}</style>
+      <style jsx>{`:global(.inp){width:100%;border:1px solid #e5e7eb;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem;outline:none}:global(.inp:focus){box-shadow:0 0 0 2px #FFC79A}`}</style>
     </div>
   );
 }
@@ -214,7 +214,7 @@ export default function UsersManager() {
             onOpenFilters={() => setDrawer(true)} activeCount={countActive(filters)} loading={loading} chips={chips} />
         </div>
         <button onClick={() => setModal({ open: true, user: null })} disabled={!meta}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 disabled:opacity-60 shrink-0">
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 disabled:opacity-60 shrink-0">
           <Plus size={16} /> Add user
         </button>
       </div>
@@ -248,7 +248,7 @@ export default function UsersManager() {
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="inline-flex gap-1">
-                        <button onClick={() => setModal({ open: true, user: u })} className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-blue-600"><Pencil size={15} /></button>
+                        <button onClick={() => setModal({ open: true, user: u })} className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-brand-600"><Pencil size={15} /></button>
                         <button onClick={() => del(u.id)} className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-red-600"><Trash2 size={15} /></button>
                       </div>
                     </td>

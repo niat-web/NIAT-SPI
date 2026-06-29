@@ -55,7 +55,7 @@ export default function Sidebar({
       <Link href={item.href} onClick={() => setOpen(false)}
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-          active ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100",
+          active ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-100",
         )}>
         {item.icon} {item.label}
       </Link>

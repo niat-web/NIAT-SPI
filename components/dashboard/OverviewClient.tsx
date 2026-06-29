@@ -63,7 +63,7 @@ export default function OverviewClient({ role, scopeLabel }: { role: Role; scope
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+        <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-medium text-brand-700">
           {ROLE_LABELS[role]} · {scopeLabel}
         </span>
         {data.syncedAt && (

@@ -115,7 +115,7 @@ export default function StudentsClient() {
         onOpenFilters={() => setDrawer(true)} activeCount={countActive(filters)} loading={loading} chips={chips}
         rightSlot={
           <select value={sort} onChange={(e) => setSort(e.target.value as "default" | "high" | "low")}
-            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-300">
             <option value="default">Sort: Default</option>
             <option value="high">Attendance: High to Low</option>
             <option value="low">Attendance: Low to High</option>
@@ -149,7 +149,7 @@ export default function StudentsClient() {
                       </td>
                       <td className="px-5 py-3 text-right">
                         <Link href={`/spi/${r.studentUserId}`} target="_blank"
-                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-semibold">
+                          className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 text-xs font-semibold">
                           Open <ExternalLink size={12} />
                         </Link>
                       </td>
@@ -166,7 +166,7 @@ export default function StudentsClient() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}
-            className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+            className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300">
             <option value={200}>200 / page</option>
             <option value={500}>500 / page</option>
             <option value={1000}>1000 / page</option>

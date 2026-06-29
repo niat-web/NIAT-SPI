@@ -10,6 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // NIAT SPI brand orange — matches the logo gradient (#FF8A1E → #F25C05).
+        // Used for all primary accents (buttons, active nav, links, rings).
+        brand: {
+          50: "#FFF3EA",
+          100: "#FFE2CC",
+          200: "#FFC79A",
+          300: "#FFAA66",
+          400: "#FF9440",
+          500: "#FF7A1A",
+          600: "#F25C05",
+          700: "#D24E04",
+          800: "#A93E05",
+          900: "#84320A",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -23,7 +23,7 @@ const levels = [
 
 const features = [
   {
-    icon: <CalendarCheck className="text-blue-600" size={22} />,
+    icon: <CalendarCheck className="text-brand-600" size={22} />,
     title: "Attendance & Eligibility",
     body: "Live, semester-wide attendance per course. A minimum of 80% keeps you eligible to earn your SPI.",
   },
@@ -46,7 +46,7 @@ export default function Landing() {
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <Logo size={30} />
-          <Link href="/staff-login" className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors">
+          <Link href="/staff-login" className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-brand-600 transition-colors">
             <ShieldCheck size={15} /> Staff sign in
           </Link>
         </div>
@@ -54,7 +54,7 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-12 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-3">NIAT · Skill Performance Index</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-brand-600 mb-3">NIAT · Skill Performance Index</p>
         <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
           A skill score that tracks how<br className="hidden sm:block" /> you learn and how skill-ready you are.
         </h1>
@@ -84,20 +84,20 @@ export default function Landing() {
       {/* How you're assessed */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-1"><ClipboardList size={18} className="text-blue-600" /><h2 className="text-xl font-bold">How you&apos;re assessed</h2></div>
+          <div className="flex items-center gap-2 mb-1"><ClipboardList size={18} className="text-brand-600" /><h2 className="text-xl font-bold">How you&apos;re assessed</h2></div>
           <p className="text-sm text-gray-500 mb-6">Four checkpoints build your course score — the Final Skill Assessment matters most.</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {assessments.map((a) => (
               <div key={a.label} className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
                 <div className="flex items-baseline justify-between">
                   <p className="text-sm font-semibold text-gray-800">{a.label}</p>
-                  <span className="text-lg font-bold text-blue-600">{a.weight}</span>
+                  <span className="text-lg font-bold text-brand-600">{a.weight}</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1.5 leading-snug">{a.sub}</p>
               </div>
             ))}
           </div>
-          <div className="mt-5 rounded-xl bg-blue-50 border border-blue-100 px-4 py-3 text-sm text-blue-800">
+          <div className="mt-5 rounded-xl bg-brand-50 border border-brand-100 px-4 py-3 text-sm text-brand-800">
             <span className="font-semibold">SPI</span> = Sum of (Course Points × Weights) ÷ Total Weights — a single score from 0 to 10.
           </div>
         </div>
@@ -106,19 +106,19 @@ export default function Landing() {
       {/* Skill levels + eligibility */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 grid lg:grid-cols-2 gap-4">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-5"><Award size={18} className="text-blue-600" /><h2 className="text-xl font-bold">Skill levels &amp; points</h2></div>
+          <div className="flex items-center gap-2 mb-5"><Award size={18} className="text-brand-600" /><h2 className="text-xl font-bold">Skill levels &amp; points</h2></div>
           <div className="space-y-2">
             {levels.map((l) => (
               <div key={l.grade} className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-2.5">
                 <span className="text-sm text-gray-500">{l.range}</span>
                 <span className="text-sm font-semibold text-gray-800">{l.grade}</span>
-                <span className="text-sm font-bold text-blue-600">{l.pts} pts</span>
+                <span className="text-sm font-bold text-brand-600">{l.pts} pts</span>
               </div>
             ))}
           </div>
         </div>
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-5"><BookOpen size={18} className="text-blue-600" /><h2 className="text-xl font-bold">Eligibility to earn SPI</h2></div>
+          <div className="flex items-center gap-2 mb-5"><BookOpen size={18} className="text-brand-600" /><h2 className="text-xl font-bold">Eligibility to earn SPI</h2></div>
           <ul className="space-y-3 text-sm">
             {[
               "Attendance — minimum 80% (Recovery Mode applies if missed)",
@@ -163,7 +163,7 @@ export default function Landing() {
       <footer className="border-t border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
           <span>© NIAT · Skill Performance Index</span>
-          <Link href="/staff-login" className="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors">
+          <Link href="/staff-login" className="inline-flex items-center gap-1.5 hover:text-brand-600 transition-colors">
             Staff console <ArrowRight size={14} />
           </Link>
         </div>

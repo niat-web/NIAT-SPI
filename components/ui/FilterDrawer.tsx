@@ -77,17 +77,17 @@ export default function FilterDrawer({
                       <button key={o.value} type="button" onClick={() => toggle(g, o.value)}
                         className={cn(
                           "w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm transition-colors text-left",
-                          on ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300",
+                          on ? "border-brand-500 bg-brand-50" : "border-gray-200 hover:border-gray-300",
                         )}>
                         <span className="flex items-center gap-2.5 min-w-0">
                           <span className={cn(
                             "w-4 h-4 rounded flex items-center justify-center shrink-0 border",
                             g.mode === "single" && "rounded-full",
-                            on ? "bg-blue-600 border-blue-600 text-white" : "border-gray-300",
+                            on ? "bg-brand-600 border-brand-600 text-white" : "border-gray-300",
                           )}>
                             {on && <Check size={11} strokeWidth={3} />}
                           </span>
-                          <span className={cn("truncate", on ? "text-blue-900 font-medium" : "text-gray-700")}>{o.label}</span>
+                          <span className={cn("truncate", on ? "text-brand-900 font-medium" : "text-gray-700")}>{o.label}</span>
                         </span>
                         {o.count !== undefined && <span className="text-xs text-gray-400 shrink-0">{o.count}</span>}
                       </button>
@@ -108,7 +108,7 @@ export default function FilterDrawer({
           <div className="flex-1" />
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
           <button onClick={() => { onApply(draft); onClose(); }}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Apply filters</button>
+            className="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold">Apply filters</button>
         </div>
       </div>
       <style jsx>{`

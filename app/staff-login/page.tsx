@@ -59,18 +59,18 @@ function LoginForm() {
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email</label>
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
               placeholder="you@nxtwave.co.in" autoComplete="email" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">Password</label>
             <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300"
               placeholder="••••••••" autoComplete="current-password" />
           </div>
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold px-4 py-2.5 transition-colors">
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold px-4 py-2.5 transition-colors">
             {loading ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
             {loading ? "Signing in…" : "Sign in"}
           </button>

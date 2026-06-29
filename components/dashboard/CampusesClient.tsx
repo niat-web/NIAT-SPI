@@ -92,7 +92,7 @@ export default function CampusesClient() {
           {(["section", "campus"] as View[]).map((v) => (
             <button key={v} onClick={() => setView(v)}
               className={cn("px-3.5 py-2 rounded-md text-sm font-medium transition-colors",
-                view === v ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50")}>
+                view === v ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-50")}>
               {v === "section" ? "By section" : "By campus"}
             </button>
           ))}

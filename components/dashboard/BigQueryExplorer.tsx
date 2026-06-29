@@ -71,10 +71,10 @@ export default function BigQueryExplorer() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden min-h-[300px]">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <p className="text-sm font-semibold text-gray-800 truncate">
-            {table ? <>{dataset}.<span className="text-blue-600">{table}</span></> : "Table preview"}
+            {table ? <>{dataset}.<span className="text-brand-600">{table}</span></> : "Table preview"}
           </p>
           {table && (
-            <button onClick={() => openTable(table)} className="text-gray-400 hover:text-blue-600" title="Reload">
+            <button onClick={() => openTable(table)} className="text-gray-400 hover:text-brand-600" title="Reload">
               <RefreshCw size={14} />
             </button>
           )}
@@ -134,12 +134,12 @@ function Row({ active, onClick, label, sub }: { active: boolean; onClick: () => 
   return (
     <button onClick={onClick}
       className={cn("w-full flex items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left transition-colors",
-        active ? "bg-blue-50 text-blue-800" : "hover:bg-gray-50 text-gray-700")}>
+        active ? "bg-brand-50 text-brand-800" : "hover:bg-gray-50 text-gray-700")}>
       <span className="min-w-0">
         <span className="block text-sm font-medium truncate">{label}</span>
         {sub && <span className="block text-[11px] text-gray-400 truncate">{sub}</span>}
       </span>
-      <ChevronRight size={14} className={cn("shrink-0", active ? "text-blue-500" : "text-gray-300")} />
+      <ChevronRight size={14} className={cn("shrink-0", active ? "text-brand-500" : "text-gray-300")} />
     </button>
   );
 }
