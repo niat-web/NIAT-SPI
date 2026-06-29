@@ -26,6 +26,8 @@ export default function StudentsClient() {
   const [debounced, setDebounced] = useState("");
   const [drawer, setDrawer] = useState(false);
   const [filters, setFilters] = useState<FilterValue>({});
+  const [pageSize, setPageSize] = useState(200);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q), 350);
@@ -78,6 +80,16 @@ export default function StudentsClient() {
     });
   }, [rows, filters]);
 
+  // Reset to first page whenever the result set or page size changes.
+  useEffect(() => { setPage(1); }, [debounced, filters, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const pageSafe = Math.min(page, totalPages);
+  const paged = useMemo(
+    () => filtered.slice((pageSafe - 1) * pageSize, pageSafe * pageSize),
+    [filtered, pageSafe, pageSize],
+  );
+
   const chips = useMemo(() => {
     const out: { key: string; label: string; onRemove: () => void }[] = [];
     for (const [key, vals] of Object.entries(filters)) {
@@ -111,7 +123,7 @@ export default function StudentsClient() {
                 ? Array.from({ length: 8 }).map((_, i) => (
                     <tr key={i} className="border-b border-gray-50"><td colSpan={5} className="px-5 py-3"><Skeleton className="h-5 w-full" /></td></tr>
                   ))
-                : filtered.map((r) => (
+                : paged.map((r) => (
                     <tr key={r.studentUserId} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="px-5 py-3 font-medium text-gray-800">{r.studentName}</td>
                       <td className="px-3 py-3 text-gray-500">{r.instituteName}</td>
@@ -135,9 +147,29 @@ export default function StudentsClient() {
           </table>
         </div>
       </div>
-      <p className="text-xs text-gray-400">
-        Showing {filtered.length} of {rows.length} students · sorted by lowest attendance first
-      </p>
+      {/* Pagination bar */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
+          <select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}
+            className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <option value={200}>200 / page</option>
+            <option value={500}>500 / page</option>
+            <option value={1000}>1000 / page</option>
+          </select>
+          <span className="text-sm text-gray-400">{filtered.length.toLocaleString()} total</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">Page {pageSafe} of {totalPages}</span>
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={pageSafe <= 1}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            ← Prev
+          </button>
+          <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={pageSafe >= totalPages}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            Next →
+          </button>
+        </div>
+      </div>
 
       <FilterDrawer open={drawer} onClose={() => setDrawer(false)} groups={groups} value={filters}
         onApply={setFilters} title="Filter students" />
