@@ -3,7 +3,8 @@ import { runSync } from "@/lib/sync";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // allow long-running sync (Vercel Pro)
+// No explicit maxDuration — uses the platform default so deploys work on any
+// plan. The sync finishes in ~7s. On Pro you may add `export const maxDuration = 300`.
 
 export async function GET(req: Request) {
   // Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` when CRON_SECRET is set.
